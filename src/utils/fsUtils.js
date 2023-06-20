@@ -13,6 +13,29 @@ const readChocolates = async () => {
   }
 };
 
+const writeChocolates = async (newChocolate) => {
+  try {
+    const allChocolates = await readChocolates();
+    const nextId = allChocolates.length > 0 ? allChocolates[allChocolates.length - 1].id : 0;
+    const newChocolateWithId = {
+      id: nextId + 1,
+      ...newChocolate,
+    };
+
+    const newListChoco = JSON.stringify([
+      ...allChocolates,
+      newChocolateWithId,
+    ]);
+
+    await fs.writeFile(path.resolve(__dirname, CHOCOLATES), newListChoco);
+
+    return newChocolateWithId;
+  } catch (error) {
+    console.log(console.error);
+  }
+};
+
 module.exports = {
   readChocolates,
+  writeChocolates,
 };

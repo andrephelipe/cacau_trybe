@@ -1,5 +1,5 @@
 const express = require('express');
-const { readChocolates } = require('./utils/fsUtils');
+const { readChocolates, writeChocolates } = require('./utils/fsUtils');
 
 const app = express();
 app.use(express.json());
@@ -30,6 +30,13 @@ app.get('/chocolates/brand/:brandId', async (req, res) => {
   } 
 
   return res.status(200).json(chocoBrandId);
+});
+
+app.post('/chocolates', async (req, res) => {
+  const newChocolate = req.body;
+
+  const newChocolateWithId = await writeChocolates(newChocolate);
+  return res.status(201).json({ chocolate: newChocolateWithId });
 });
 
 module.exports = {
