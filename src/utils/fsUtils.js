@@ -5,8 +5,9 @@ const CHOCOLATES = '../../data/data.json';
 
 const readChocolates = async () => {
   try {
-    const data = await fs.readFile(path.resolve(__dirname, CHOCOLATES));
+    const data = await fs.readFile(path.resolve(__dirname, CHOCOLATES), 'utf-8');
     const chocolates = JSON.parse(data);
+
     return chocolates;
   } catch (error) {
     console.error(`Erro na leitura do arquivo ${error.message}`);
