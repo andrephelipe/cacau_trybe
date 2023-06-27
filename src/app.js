@@ -1,5 +1,6 @@
 const express = require('express');
 const { readChocolates, writeChocolates } = require('./utils/fsUtils');
+const { validateId, validateBody } = require('./middleware/middlewares');
 
 const app = express();
 app.use(express.json());
@@ -9,9 +10,14 @@ app.get('/hello', (req, res) => {
 });
 
 app.get('/chocolates', async (req, res) => {
-  const resultChocolates = await readChocolates();
-
-  return res.status(200).json(resultChocolates);
+  try {
+    const resultChocolates = await readChocolates();
+    
+    return res.status(200).json({ chocolates: resultChocolates });
+  } catch (error) {
+    // console.log(console.error);
+    return res.status(500).json({ message: 'INTERNAL SERVER ERROR' });
+  }
 });
 
 app.get('/chocolates/total', async (req, res) => {
@@ -20,12 +26,12 @@ app.get('/chocolates/total', async (req, res) => {
   return res.status(200).json({ totalChocolates: resultChocolates.length });
 });
 
-app.get('/chocolates/:id', async (req, res) => {
+app.get('/chocolates/:id', validateId, async (req, res) => {
   const { id } = req.params;
   const resultChocolates = await readChocolates();
 
   const chocoId = resultChocolates.find((item) => item.id === Number(id));
-  
+
   if (!chocoId) return res.status(404).json({ message: 'Chocolate not found' });
   return res.status(200).json(chocoId);
 });
@@ -43,11 +49,11 @@ app.get('/chocolates/brand/:brandId', async (req, res) => {
   return res.status(200).json(chocoBrandId);
 });
 
-app.post('/chocolates', async (req, res) => {
-  const newChocolate = req.body;
+app.post('/chocolates', validateBody, async (req, res) => {
+  const { name, brandId } = req.body;
 
-  const newChocolateWithId = await writeChocolates(newChocolate);
-  return res.status(201).json({ chocolate: newChocolateWithId });
+  const newChocolateWithId = await writeChocolates(name, brandId);
+  return res.status(201).json(newChocolateWithId);
 });
 
 module.exports = {

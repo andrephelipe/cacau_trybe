@@ -10,17 +10,18 @@ const readChocolates = async () => {
 
     return chocolates;
   } catch (error) {
-    console.error(`Erro na leitura do arquivo ${error.message}`);
+    throw new Error('INTERNAL SERVER ERROR');
   }
 };
 
-const writeChocolates = async (newChocolate) => {
+const writeChocolates = async (name, brandId) => {
   try {
     const allChocolates = await readChocolates();
     const nextId = allChocolates.length > 0 ? allChocolates[allChocolates.length - 1].id : 0;
     const newChocolateWithId = {
       id: nextId + 1,
-      ...newChocolate,
+      name,
+      brandId,
     };
 
     const newListChoco = JSON.stringify([
